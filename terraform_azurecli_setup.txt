@@ -1,0 +1,94 @@
+
+Manual IaC
+Set-up terraform on ec2:
+-------------------------
+
+# Launch a ec2 instance
+
+Go root user
+$ sudo su
+
+## Setup Centos repository URLs ##
+$ sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+$ sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+$ yum update -y
+
+Optional
+$ yum update -y
+## Install terraform ##
+$  sudo yum install -y yum-utils
+$ sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+$ sudo yum -y install terraform
+
+## Install git ##
+$ sudo yum install git
+
+## Install unzip to extract terraform downloaded by task TerraformInstaller@0
+$ sudo yum install -y unzip 
+
+## To help manupulate JSON 
+$ sudo yum install -y jq
+
+## Install Azure CLI ##
+
+Import the Microsoft repository key. (for lower versions than 10):
+$ sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
+For RHEL 8, add packages-microsoft-com-prod repository:
+$ sudo dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.rpm
+
+To view available versions with command:
+$ dnf list --showduplicates azure-cli
+
+Install with the dnf install command:
+$ sudo dnf install azure-cli
+
+To install a specific version:
+$ sudo dnf install azure-cli-<version>-1.el7
+
+Update Azure CLI:
+$ az upgrade (for latest)
+or,
+$ sudo dnf update azure-cli
+
+Verify Installation:
+$ az --version
+
+Uninstall Azure CLI:
+ - Remove the package from your system
+   $ sudo dnf remove azure-cli
+ - Remove the repository
+   $ sudo rm /etc/yum.repos.d/azure-cli.repo
+ - Remove the Microsoft packages signing key
+   $ MSFT_KEY=`rpm -qa gpg-pubkey /* --qf "%{version}-%{release} %{summary}\n" | grep Microsoft | awk '{print $1}'`
+   $ sudo rpm -e --allmatches gpg-pubkey-$MSFT_KEY
+
+Remove data:
+$ rm -rf ~/.azure
+
+
+## Continue to Setup agent on ec2
+
+#Server URL
+https://dev.azure.com/third8devops 
+
+#agent pool 
+az-classic-pool
+
+PAT
+az-classic-pat
+8YSVjlVvxzTNc6j7T......jix34jPVNT8YI1OoWSxvW2TXlTcFrZJQQJ99CDAC......xxxx...xxxx....SAZDO4WOQ
+
+agent from testPool
+https://download.agent.dev.azure.com/agent/4.264.2/vsts-agent-linux-x64-4.264.2.tar.gz
+
+## Setting up Terraform on local system 
+To set up the System Path permanently so it works in Git Bash, CMD, and PowerShell, follow these steps:
+
+Windows System Path Setup -
+1) Press the Windows Key and type env.
+2) Select `Edit` the system environment variables.
+3) Click the `Environment Variables`... button.
+4) In the `System variables` (bottom) section, find `Path` and click `Edit`....
+5) Click `New` and paste this exact path: `D:\DevOps_Practice\terraform_1.14.9_windows_amd64`
+6) Close all terminal instances then open and verify doing `terraform -version`
